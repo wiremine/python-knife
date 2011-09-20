@@ -3,15 +3,21 @@ from knife.template import Template
 class MyTemplate(Template):
     filename = "simple.html"
     selector = "#test"
+    mapping = {
+        'h2': 'title',
+        '#content': ('content', {
+            '#date': 'datetime',
+            '#body': 'body'
+        }),
+        '#literal': "Hello World!"
+    }
 
-t = MyTemplate("#test")
-print type(t)
-print t
+t = MyTemplate()
 
-class MyTemplate2(Template):
-    filename = "simple.html"
-    #selector = "#test"
-
-t = MyTemplate2()
-print type(t)
-print t
+print t.render({
+    'title': 'Sometimes a Great Notion',
+    'content': {
+        'datetime': 'now', 
+        'body': "Hello world"
+    }
+})
