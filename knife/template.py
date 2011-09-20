@@ -26,10 +26,15 @@ class Template(PyQuery):
     
     # TODO: Clean up string rendering, to add \n as needed
         
+    def process_selector(self, selector):
+        # TODO: handle :before, and :after 
+        return (selector, None)
+        
     def render(self, context):
         """Render the context"""  
         for selector, value in self.mapping.items():
-            node = self(selector)
+            selector, mode = self.process_selector(selector)
+            node = self(selector)            
             # Only do something if we have selected nodes.
             if node:
                 # TODO: Might need a state machine to scale this
@@ -55,6 +60,7 @@ class Template(PyQuery):
                     elif isinstance(value[0], basestring) and isinstance(value[1], Transform):
                         transformer = value[1].transform(value[0], context, selector, node)
                 
+                # TODO: Handle mode
                 node.html(result)
         return self
                 

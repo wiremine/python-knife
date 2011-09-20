@@ -19,6 +19,7 @@ class Transform(object):
     def run(self):
         raise NotImplementedError
     
+    
 class ContextKeyTransform(Transform):
     """A simple transformer: replaces the value with the context"""
     def run(self):
@@ -28,10 +29,16 @@ class ContextKeyTransform(Transform):
             # Treat it like a literal
             return self.key
         
+        
 class TemplateTransform(Transform):
     def run(self):
         return "TODO: Templates"    
         
+        
 class MapTransform(Transform):
     def run(self):
         return "TODO: Maps"    
+        # if context[key] is a list, ...
+        # if context[key] is a object
+        # if context[key] is a dict
+        # self: ... do what?
