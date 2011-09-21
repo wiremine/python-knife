@@ -1,7 +1,9 @@
+from lxml import etree
 from pyquery import PyQuery
 from pyquery.cssselectpatch import selector_to_xpath 
  
 from knife.transformer import Transform, ContextKeyTransform, MapTransform          
+from knife.util import process_map_pair 
  
 class Template(PyQuery):
     """The base template."""
@@ -24,8 +26,18 @@ class Template(PyQuery):
                 elements.extend(r)
             self = list.__init__(self, elements)
     
+    def __unicode__(self):
+        """xml representation of current nodes"""
+        return unicode('').join([etree.tostring(e, encoding=unicode) for e in self])
+    
+    def prepare_context(self, context):
+        return context
+    
     # TODO: Clean up string rendering, to add \n as needed
-        
+    # def __repr__
+    
+    # TODO: process_selector() and render() probably need to be split out of template
+    # And shared across Template and Transform classes
     def process_selector(self, selector):
         # TODO: handle :before, and :after 
         return (selector, None)
@@ -34,33 +46,5 @@ class Template(PyQuery):
         """Render the context"""  
         for selector, value in self.mapping.items():
             selector, mode = self.process_selector(selector)
-            node = self(selector)            
-            # Only do something if we have selected nodes.
-            if node:
-                # TODO: Might need a state machine to scale this
-
-                # Flatten a single-value tuple 
-                if isinstance(value, tuple):
-                    if len(value) == 1:
-                        value = value[0]
-                
-                # A simple replacement
-                if isinstance(value, basestring):
-                    result = ContextKeyTransform.transform(value, context, selector, node)
-
-                # Or a tuple
-                elif isinstance(value, tuple):
-    
-                    if isinstance(value[0], Template):
-                        result = TemplateTransform.transform(value, context, selector, node)
-
-                    elif isinstance(value[0], basestring) and isinstance(value[1], dict):
-                        result = MapTransform.transform(value[0], context, selector, node, map=value[1])
-
-                    elif isinstance(value[0], basestring) and isinstance(value[1], Transform):
-                        transformer = value[1].transform(value[0], context, selector, node)
-                
-                # TODO: Handle mode
-                node.html(result)
+            process_map_pair(selector, value, context, self)
         return self
-                
