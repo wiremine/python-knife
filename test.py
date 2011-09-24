@@ -1,5 +1,3 @@
-import lxml
-import lxml.html
 from knife.template import Template
 
 class MyBasicTemplate(Template):
