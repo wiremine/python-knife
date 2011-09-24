@@ -24,17 +24,20 @@ class Transform(object):
 class ContextKeyTransform(Transform):
     """A simple transformer: replaces the value with the context"""
     def run(self):
-        #print "-----------", self.key, self.context
         if self.key in self.context:
-            return self.context[self.key]
+            # TODO: This needs to be smarter: 
+            #   if self.context[self.key] is not a string, 
+            #   do what?
+            new_string = self.context[self.key]
         else:
             # Treat it like a literal
-            return self.key
-        
+            new_string = self.key
+        self.node.html(new_string)
         
 class TemplateTransform(Transform):
     def run(self):
-        return "TODO: Templates"    
+        sub_template = self.key
+        self.node.html(sub_template.render(self.context))
         
         
 class MapTransform(Transform):
@@ -42,7 +45,7 @@ class MapTransform(Transform):
         if not self.key in self.context:
             return self.node
         if isinstance(self.context[self.key], list):
-            return "TODO: mapping lists"
+            return self.run_list()
         elif isinstance(self.context[self.key], dict):
             return self.run_dict()
         elif isinstance(self.context[self.key], object):
@@ -55,14 +58,19 @@ class MapTransform(Transform):
         content_list = self.context[self.key]
         map = self.map
         node = self.node
-        
-        # 1.0 get the template, which is the first child of the node
-        # iterate through the items
-        #    Clone the first child
-        #    Map it with either run_list, run_dict or run_object
-        #    Append it to the node
-        
-        
+        # A bit of a hack to get the first child
+        child_template_node = node.children().next().clone()
+        self.node.children().remove()
+
+        for item in content_list:
+            new_item_node = child_template_node.clone()
+            for selector, value in self.map.items():
+                new_node = new_item_node(selector)
+                # TODO: Fix this: this assumes item is an object
+                new_node.html(getattr(item, value))
+            self.node.append(new_item_node)
+
+                
     def run_dict(self):
         """Map the dict"""
         content_dict = self.context[self.key]
@@ -70,7 +78,6 @@ class MapTransform(Transform):
         node = self.node
         for selector, value in self.map.items():
             process_map_pair(selector, value, content_dict, self.node)
-        #return node
         
     def run_object(self):
         """Map the object"""
@@ -82,7 +89,7 @@ class MapTransform(Transform):
             # TODO: if value is a tuple, then recurse
             if new_node and hasattr(content_object, value):
                 new_node.html(getattr(content_object, value))
-        return node
+
         
         
         

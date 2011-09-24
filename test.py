@@ -1,4 +1,13 @@
+import lxml
+import lxml.html
 from knife.template import Template
+
+class MyBasicTemplate(Template):
+    filename = "simple2.html"
+    selector = '#test'
+    mapping = {
+        'h2': 'Literal String'
+    }
 
 class MyTemplate(Template):
     filename = "simple.html"
@@ -20,22 +29,27 @@ class MyTemplate(Template):
                 'h5': 'h5_title'
             })
         }),
-        '#literal': "Hello World!"
+        '#literal': MyBasicTemplate(),
+        '#list': ('content_list', {
+            'h3': 'datetime',
+            'h4': 'body'
+        })
     }
 
 
 class SimpleObject(object):
     datetime = "now 2"
     body = "body 2"
-so = SimpleObject()  
     
+simple_list = [SimpleObject() for i in range(0, 10)]
+
     
 t = MyTemplate()
 print t.render({
     'title': 'Sometimes a Great Notion',
     'content': {
-        'datetime': 'now', 
-        'body': "Hello world"
+        'datetime': 'now 1', 
+        'body': "body 1"
     },
     'more_content': {
         'datetime': 'Time!',
@@ -44,5 +58,6 @@ print t.render({
             'h5_title': 'H5 Title'
         }
     },
-    'content_object': so
+    'content_object': SimpleObject(),
+    'content_list': simple_list
 })

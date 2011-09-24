@@ -1,5 +1,4 @@
 
-
 def process_map_pair(selector, value, context, current_node):
     """Process a mapping pair"""
     from knife.template import Template
@@ -15,24 +14,23 @@ def process_map_pair(selector, value, context, current_node):
         
         # A simple replacement
         if isinstance(value, basestring):
-            # TODO: new node should be changed in place
-            result = ContextKeyTransform.transform(value, context, selector, new_node)
+            ContextKeyTransform.transform(value, context, selector, new_node)
+
+        elif isinstance(value, Template):
+            TemplateTransform.transform(value, context, selector, new_node)   
 
         # Or a tuple
         elif isinstance(value, tuple):
 
             if isinstance(value[0], Template):
-                # TODO: new_node should be changed in place
-                result = TemplateTransform.transform(value, context, selector, new_node)
+                TemplateTransform.transform(value, context, selector, new_node)
 
             elif isinstance(value[0], basestring) and isinstance(value[1], dict):
                 MapTransform.transform(value[0], context, selector, new_node, map=value[1])
-                result = None
 
             elif isinstance(value[0], basestring) and isinstance(value[1], Transform):
-                # TODO: new node should be changed in place
                 transformer = value[1].transform(value[0], context, selector, new_node)
-                result = transformer.transform(value[0], context, selector, new_node)
-        
-        if result:
-            new_node.html(result)
+                transformer.transform(value[0], context, selector, new_node)
+        else:
+            raise Error("Invalid Option")
+
