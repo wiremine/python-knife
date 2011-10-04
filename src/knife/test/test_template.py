@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 import knife 
 from knife.template import Template
@@ -26,18 +27,28 @@ class TestSimple(unittest.TestCase):
             }
         t = MyBasicTemplate()
 
+        start = time.time()
         output = t.render({})
+        end = time.time()
+        print "Total time: %03.5f sec" % (end - start)
         expected = u'<div id="test"><h2>Literal String</h2></div>'
         self.assertHTML(expected, output)
         
     def test_context_key_lookup(self):
+        """Test basic search and replace."""
         class MyBasicTemplate(Template):
             filename = os.path.join(os.getcwd(), "src", "knife", "test", "basic.html")
             selector = '#test'
             mapping = {
                 'h2': 'context_key'
             }
-        t = MyBasicTemplate()    
+        
+        t = MyBasicTemplate()  
+         
+        start = time.time()
         output = t.render({'context_key': 'Hello World'})
+        end = time.time() 
+        print "Total time: %03.5f sec" % (end - start)
+        
         expected = u'<div id="test"><h2>Hello World</h2></div>'
         self.assertHTML(expected, output)
