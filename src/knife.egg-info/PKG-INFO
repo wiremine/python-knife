@@ -1,0 +1,14 @@
+Metadata-Version: 1.0
+Name: knife
+Version: 0.1.0
+Summary: Dynamic HTML without a Template DSL
+Home-page: UNKNOWN
+Author: Chip Tol
+Author-email: wiremine@gmail.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6

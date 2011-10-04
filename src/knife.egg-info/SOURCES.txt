@@ -1,0 +1,10 @@
+README.txt
+setup.py
+src/knife/__init__.py
+src/knife/template.py
+src/knife/transformer.py
+src/knife/util.py
+src/knife.egg-info/PKG-INFO
+src/knife.egg-info/SOURCES.txt
+src/knife.egg-info/dependency_links.txt
+src/knife.egg-info/top_level.txt

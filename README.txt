@@ -1,0 +1,1 @@
+Dynamic HTML without a template DSL.

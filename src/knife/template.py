@@ -36,52 +36,58 @@ class Template(PyQuery):
     def prepare_context(self, context):
         return context
     
+    def prepare_map(self, map): # or maybe we don't need to pass in args?
+        return map
+        
+    def prepare_template(self):    
+        pass
+        
     def html(self, value=no_default):
-            """Get or set the html representation of sub nodes.
+        """Get or set the html representation of sub nodes.
 
-            Get the text value::
+        Get the text value::
 
-                >>> d = PyQuery('<div><span>toto</span></div>')
-                >>> print(d.html())
-                <span>toto</span>
+            >>> d = PyQuery('<div><span>toto</span></div>')
+            >>> print(d.html())
+            <span>toto</span>
 
-            Set the text value::
+        Set the text value::
 
-                >>> d.html('<span>Youhou !</span>')
-                [<div>]
-                >>> print(d)
-                <div><span>Youhou !</span></div>
-            """
-            if value is no_default:
-                if not self:
-                    return None
-                tag = self[0]
-                children = tag.getchildren()
-                if not children:
-                    return tag.text
-                html = tag.text or ''
-                html += unicode('').join([etree.tostring(e, encoding=unicode) for e in children])
-                return html
+            >>> d.html('<span>Youhou !</span>')
+            [<div>]
+            >>> print(d)
+            <div><span>Youhou !</span></div>
+        """
+        if value is no_default:
+            if not self:
+                return None
+            tag = self[0]
+            children = tag.getchildren()
+            if not children:
+                return tag.text
+            html = tag.text or ''
+            html += unicode('').join([etree.tostring(e, encoding=unicode) for e in children])
+            return html
+        else:
+            if isinstance(value, PyQuery):
+                new_html = unicode(value)
+            elif isinstance(value, basestring):
+                new_html = value
+            elif not value:
+                new_html = ''
             else:
-                if isinstance(value, PyQuery):
-                    new_html = unicode(value)
-                elif isinstance(value, basestring):
-                    new_html = value
-                elif not value:
-                    new_html = ''
-                else:
-                    raise ValueError(type(value))
+                raise ValueError(type(value))
 
-                for tag in self:
-                    for child in tag.getchildren():
-                        tag.remove(child)
-                    root = fromstring(unicode('<root>') + new_html + unicode('</root>'), self.parser)[0]
-                    children = root.getchildren()
-                    if children:
-                        tag.extend(children)
-                    tag.text = root.text
-                    tag.tail = root.tail
-            return self
+            for tag in self:
+                for child in tag.getchildren():
+                    tag.remove(child)
+                root = fromstring(unicode('<root>') + new_html + unicode('</root>'), self.parser)[0]
+                children = root.getchildren()
+                if children:
+                    tag.extend(children)
+                tag.text = root.text
+                tag.tail = root.tail
+        return self
 
     # TODO: Clean up string rendering, to add \n as needed
     # def __repr__
