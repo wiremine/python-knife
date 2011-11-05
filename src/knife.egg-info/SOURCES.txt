@@ -1,9 +1,12 @@
 README.txt
 setup.py
 src/knife/__init__.py
+src/knife/filters.py
 src/knife/template.py
 src/knife/transformer.py
+src/knife/transformer2.py
 src/knife/util.py
+src/knife/util2.py
 src/knife.egg-info/PKG-INFO
 src/knife.egg-info/SOURCES.txt
 src/knife.egg-info/dependency_links.txt
